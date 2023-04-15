@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0 <0.9.0;
 
-contract Faucet {
+import "./Owned.sol";
+
+contract Faucet is Owned {
     uint public numOfFunders;
     mapping(address => bool) public funders;
     mapping(uint => address) public lutFunders;
