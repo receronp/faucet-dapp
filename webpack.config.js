@@ -21,12 +21,20 @@ const config = {
   plugins: [
     new HtmlWebpackPlugin({
       template: "index.html",
+      favicon: "./public/favicon.ico",
     }),
-
+    new webpack.ProvidePlugin({
+      Buffer: ["buffer", "Buffer"],
+    }),
+    new webpack.ProvidePlugin({
+      process: "process/browser",
+    }),
     // Add your plugins here
     // Learn more about plugins from https://webpack.js.org/configuration/plugins/
     new webpack.EnvironmentPlugin({
       WEBPACK_NODE_ENV: process.env.NODE_ENV,
+      WEBPACK_PUBLIC_INFURA_API_KEY: process.env.PUBLIC_INFURA_API_KEY,
+      WEBPACK_PUBLIC_MNEMONIC: process.env.PUBLIC_MNEMONIC,
     }),
   ],
   module: {
@@ -47,6 +55,13 @@ const config = {
       // Add your rules for custom modules here
       // Learn more about loaders from https://webpack.js.org/loaders/
     ],
+  },
+  resolve: {
+    extensions: [".ts", ".js"],
+    fallback: {
+      crypto: require.resolve("crypto-browserify"),
+      stream: require.resolve("stream-browserify"),
+    },
   },
 };
 

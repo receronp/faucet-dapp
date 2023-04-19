@@ -1,4 +1,5 @@
 import detectEthereumProvider from "@metamask/detect-provider";
+const HDWalletProvider = require("@truffle/hdwallet-provider");
 import { useEffect, useState } from "react";
 import "./App.css";
 import Web3 from "web3";
@@ -9,13 +10,15 @@ const App = () => {
 
   useEffect(() => {
     const loadProvider = async () => {
-      const provider = await detectEthereumProvider();
-      if (provider) {
-        // We are in the browser and metamask is running.
-        setWeb3API({ web3: new Web3(provider), provider });
-      } else {
-        console.log("Please install Metamask.");
+      let provider = await detectEthereumProvider();
+      if (!provider) {
+        // We are on the server *OR* the user is not running metamask
+        provider = new HDWalletProvider(
+          process.env.WEBPACK_PUBLIC_MNEMONIC,
+          `https://sepolia.infura.io/v3/${process.env.WEBPACK_PUBLIC_INFURA_API_KEY}`
+        );
       }
+      setWeb3API({ web3: new Web3(provider), provider });
     };
 
     loadProvider();
