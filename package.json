@@ -23,6 +23,7 @@
     "webpack-dev-server": "^4.13.2"
   },
   "dependencies": {
+    "@metamask/detect-provider": "^2.0.0",
     "bulma": "^0.9.4",
     "dotenv": "^16.0.3",
     "react": "^18.2.0",
