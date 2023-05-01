@@ -1,5 +1,5 @@
 import detectEthereumProvider from "@metamask/detect-provider";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import "./App.css";
 import Web3 from "web3";
 import { loadContract } from "./utils/load-contract";
@@ -13,6 +13,9 @@ const App = () => {
 
   const [balance, setBalance] = useState(null);
   const [account, setAccount] = useState(null);
+  const [reload, setReload] = useState(null);
+
+  const reloadEffect = useCallback(() => setReload(!reload), [reload]);
 
   useEffect(() => {
     const loadProvider = async () => {
@@ -37,7 +40,7 @@ const App = () => {
       setBalance(web3.utils.fromWei(balance, "ether"));
     };
     web3API.contract && loadBalance();
-  }, [web3API]);
+  }, [web3API, reload]);
 
   useEffect(() => {
     const getAccounts = async () => {
@@ -46,6 +49,17 @@ const App = () => {
     };
     web3API.web3 && getAccounts();
   }, [web3API.web3]);
+
+  const addFunds = useCallback(async () => {
+    const { contract, web3 } = web3API;
+    await contract.addFunds({
+      from: account,
+      value: web3.utils.toWei("1", "ether"),
+    });
+
+    // window.location.reload();
+    reloadEffect();
+  }, [account, web3API, reloadEffect]);
 
   return (
     <>
@@ -78,7 +92,9 @@ const App = () => {
           <div className="balance-view is-size-2 my-4">
             Current Balance: <strong>{balance}</strong> ETH
           </div>
-          <button className="button is-link mr-2">Donate</button>
+          <button onClick={addFunds} className="button is-link mr-2">
+            Donate 1 ETH
+          </button>
           <button className="button is-primary">Withdraw</button>
         </div>
       </div>
