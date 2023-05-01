@@ -2,6 +2,7 @@
 
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const CopyPlugin = require("copy-webpack-plugin");
 const webpack = require("webpack");
 require("dotenv").config({ path: "./.env" });
 
@@ -21,6 +22,17 @@ const config = {
   plugins: [
     new HtmlWebpackPlugin({
       template: "index.html",
+    }),
+    new CopyPlugin({
+      patterns: [{ from: "public" }],
+    }),
+    // Work around for Buffer is undefined:
+    // https://github.com/webpack/changelog-v5/issues/10
+    new webpack.ProvidePlugin({
+      Buffer: ["buffer", "Buffer"],
+    }),
+    new webpack.ProvidePlugin({
+      process: "process/browser",
     }),
 
     // Add your plugins here
@@ -47,6 +59,21 @@ const config = {
       // Add your rules for custom modules here
       // Learn more about loaders from https://webpack.js.org/loaders/
     ],
+    // Temp fix for "Critical dependency: require function is used in a way
+    // in which dependencies cannot be statically extracted"
+    // https://github.com/ethers-io/ethers.js/issues/2045
+    // https://github.com/mswjs/msw/issues/1252
+    unknownContextCritical: false,
+  },
+  resolve: {
+    fallback: {
+      assert: require.resolve("assert"),
+      crypto: require.resolve("crypto-browserify"),
+      os: require.resolve("os-browserify/browser"),
+      path: require.resolve("path-browserify"),
+      stream: require.resolve("stream-browserify"),
+      url: require.resolve("url"),
+    },
   },
 };
 
