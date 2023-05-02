@@ -61,6 +61,17 @@ const App = () => {
     reloadEffect();
   }, [account, web3API, reloadEffect]);
 
+  const withdraw = async () => {
+    const { contract, web3 } = web3API;
+    const withdrawAmount = web3.utils.toWei("0.1", "ether");
+    await contract.withdraw(withdrawAmount, {
+      from: account,
+    });
+
+    // window.location.reload();
+    reloadEffect();
+  };
+
   return (
     <>
       <div className="faucet-wrapper">
@@ -95,7 +106,9 @@ const App = () => {
           <button onClick={addFunds} className="button is-link mr-2">
             Donate 1 ETH
           </button>
-          <button className="button is-primary">Withdraw</button>
+          <button onClick={withdraw} className="button is-primary">
+            Withdraw
+          </button>
         </div>
       </div>
     </>
