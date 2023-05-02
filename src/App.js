@@ -17,6 +17,12 @@ const App = () => {
 
   const reloadEffect = useCallback(() => setReload(!reload), [reload]);
 
+  const setAccountListener = (provider) => {
+    provider.on("accountsChanged", (accounts) => {
+      setAccount(accounts[0]);
+    });
+  };
+
   useEffect(() => {
     const loadProvider = async () => {
       const provider = await detectEthereumProvider();
@@ -24,6 +30,7 @@ const App = () => {
 
       if (provider) {
         // We are in the browser and metamask is running.
+        setAccountListener(provider);
         setWeb3API({ web3: new Web3(provider), provider, contract });
       } else {
         console.log("Please install Metamask.");
